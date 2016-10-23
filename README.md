@@ -17,7 +17,7 @@ also references to web pages that point (has a link to) one of the news page in 
 # Implementation
 We count the total occurencies of words and also per category statistics. This enables us to compute
 the probabilities, and effciently combine models. Given an utterance we convert it to lowercase,
-remove its non-alphabetic chars, and split it to words.i
+remove its non-alphabetic chars, and split it to words.
 We remove the stop-words and update the counts of the remaining ones.
 The stop words is taken from MySql [2].
 
