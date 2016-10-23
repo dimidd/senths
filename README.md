@@ -1,4 +1,4 @@
-# senths
+# sentHs
 
 A simple Naive Bayes classifier for sentences. The models are instances of Monoid.
 This enables easy online learning, efficient cross-validation and parallelism.
@@ -33,7 +33,9 @@ We trained the classifier on 928 examples of two categories, and tested on 71 ex
 * web-app
 
 [1] https://izbicki.me/public/papers/icml2013-algebraic-classifiers.pdf
+
 [2] http://xpo6.com/list-of-english-stop-words/
+
 [3] http://archive.ics.uci.edu/ml/datasets/News+Aggregator
 
 
