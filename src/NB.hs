@@ -4,6 +4,7 @@ import Data.List (maximumBy)
 import Data.Ord (comparing)
 import Data.Char (isAlpha, toLower, isSpace)
 import Data.Monoid ((<>))
+import Control.Applicative (liftA2)
 
 import StopWord
 
@@ -62,7 +63,7 @@ werds = (filter isntStopWord) . unigrams . lowerChars
         lowerChars = (filter isAlphaSpace) . (map toLower)
                                                 
 isAlphaSpace :: Char -> Bool
-isAlphaSpace c = (isSpace c) || (isAlpha c)
+isAlphaSpace = liftA2 (||) isSpace isAlpha
 
 -- If a word or a klass already exists, bump its count,
 -- otherwise insert with a count of 1
