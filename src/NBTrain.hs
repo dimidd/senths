@@ -32,7 +32,7 @@ testLineIO im l = do
     return $ testLine m l  
 
 testLine :: Model -> String -> Bool
-testLine m l = cat == (testUtterance m ut)   
+testLine m l = cat == testUtterance m ut
    where
         (cat, ut) = parseLine l
 
@@ -51,9 +51,9 @@ testStatsIO tests = do
 testStats :: [Bool] -> (Int, Int, Float)
 testStats bools = (correct, total, accuracy)
     where
-        correct = (length . (filter id)) bools
+        correct = (length . filter id) bools
         total = length bools
-        accuracy = (fromIntegral correct) / (fromIntegral total)
+        accuracy = fromIntegral correct / fromIntegral total
 
 tsvsToStats :: FilePath -> FilePath -> IO (Int, Int, Float)
 tsvsToStats train test = do
