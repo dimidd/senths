@@ -1,10 +1,11 @@
 module NB where
 import qualified Data.Map.Lazy as M
-import Data.List (maximumBy)
+import Data.List (maximumBy, foldl')
 import Data.Ord (comparing)
 import Data.Char (isAlpha, toLower, isSpace)
 import Data.Monoid ((<>))
 import Control.Applicative (liftA2)
+import Data.Maybe (fromMaybe)
 
 import StopWord
 
@@ -46,7 +47,7 @@ trainUtterance m c ut = foldr (trainWerd c) m $ werds ut
 
 -- We combine with idCat to insert the class just once
 trainWerd :: Klass -> Werd -> Model -> Model
-trainWerd c w (Model wc cc cw) = (Model wc' cc cw') <> idCat
+trainWerd c w (Model wc cc cw) = Model wc' cc cw' <> idCat
     where
         wc' = upsertString wc w
         cw' = upsertMapString cw c w
@@ -58,9 +59,9 @@ unigrams = words
 
 -- normalized words (lower case alphabetic, without stop words)
 werds :: Utterance -> [Werd]
-werds = (filter isntStopWord) . unigrams . lowerChars
+werds = filter isntStopWord . unigrams . lowerChars
     where
-        lowerChars = (filter isAlphaSpace) . (map toLower)
+        lowerChars = filter isAlphaSpace . map toLower
                                                 
 isAlphaSpace :: Char -> Bool
 isAlphaSpace = liftA2 (||) isSpace isAlpha
@@ -68,9 +69,9 @@ isAlphaSpace = liftA2 (||) isSpace isAlpha
 -- If a word or a klass already exists, bump its count,
 -- otherwise insert with a count of 1
 upsertString :: M.Map String Count -> String -> M.Map String Count
-upsertString m s = case M.lookup s m of
-                     Nothing  ->  M.insert s 1 m
-                     Just n   ->  M.insert s (n + 1) m
+upsertString m s = M.insert s (oldCount + 1) m
+    where
+        oldCount = fromMaybe 0 $ M.lookup s m
 
 upsertMapString :: KlassWerds -> Klass -> Werd -> KlassWerds
 upsertMapString cw c w = case M.lookup c cw of
@@ -78,7 +79,7 @@ upsertMapString cw c w = case M.lookup c cw of
                            Just wc  ->  M.insert c (upsertString wc w)  cw
 
 testUtterance :: Model -> Utterance -> Klass
-testUtterance m u = fst $ maximumBy (comparing snd) $ catUtProbs m u
+testUtterance m u = fst . maximumBy (comparing snd) $ catUtProbs m u
 
 -- Return a list of classes, and the probability this utterance belongs to it.
 -- For each klass, we take the probability of any utternace belonging to it,
@@ -99,7 +100,7 @@ catUtProbs (Model _ cc cw) ut = zipWith multProbs catUts cats
    where
        cats = catProbs cc
        catUts = utGivenCatProbs cw ut
-       multProbs = (\(cat1, pr1) (_, pr2) -> (cat1, pr1 * pr2))
+       multProbs (cat1, pr1) (_, pr2) = (cat1, pr1 * pr2)
 
 -- Return a list of classes and probabilites ( Pr(ut|cat) )
 utGivenCatProbs :: KlassWerds -> Utterance -> [(Klass, Double)]
@@ -113,18 +114,16 @@ utProb :: Utterance -> (Klass, WerdCount) -> (Klass, Double)
 utProb ut (cat, wc) = (cat, probRedux)
     where
         werdProbs = map (werdProb wc) (werds ut)
-        probRedux = foldr (*) 1 werdProbs
+        probRedux = foldl' (*) 1 werdProbs
 
 -- Calculate the probability of a single word. To handle OOV (out of vocabulary)
 -- words, i.e. words that apperar in the test set but not in the training set,
 -- we add 1 to the number of appearnaces of the word in the klass.
 werdProb :: WerdCount -> Werd -> Double
 werdProb wc w = 
-    let count = case M.lookup w wc of
-                    Nothing -> 0
-                    Just n -> n                
+    let count = fromMaybe 0 $ M.lookup w wc
     in
-        fromIntegral (count + 1) / (fromIntegral $ M.size wc)
+        fromIntegral (count + 1) / fromIntegral (M.size wc)
 
 -- Return a list of classes and their ratios (probabilities)
 catProbs :: KlassCount -> [(Klass, Double)]
@@ -134,4 +133,4 @@ catProbs cc = map (countToRatio total) catCounts
        total = fromIntegral $ M.size cc
 
 countToRatio :: Double -> (Klass, Count) -> (Klass, Double)
-countToRatio total (cat, count) = (cat, (fromIntegral count) / total)
+countToRatio total (cat, count) = (cat, fromIntegral count / total)
