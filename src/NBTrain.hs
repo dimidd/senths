@@ -55,8 +55,8 @@ testStats bools = (correct, total, accuracy)
         total = length bools
         accuracy = fromIntegral correct / fromIntegral total
 
-tsvsToStats :: FilePath -> FilePath -> IO (Int, Int, Float)
-tsvsToStats train test = do
+tsvToStats :: FilePath -> FilePath -> IO (Int, Int, Float)
+tsvToStats train test = do
     let im = tsvToModel train
     bools <- testFileIO im test
     return $ testStats bools
