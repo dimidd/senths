@@ -1,7 +1,8 @@
 module Main where
 import NBTrain (tsvToStats, tsvToModel)
-import NB (testUtterance, Model)
+import NB (testUtterance, Model, idModel, trainUtterance)
 import System.IO (hSetBuffering, stdout, BufferMode (NoBuffering), isEOF)
+import Data.Char (toLower) 
 
 endToEnd :: IO (Int, Int, Float)
 endToEnd = tsvToStats "../data/train.tsv" "../data/test.tsv"
@@ -27,9 +28,38 @@ loop model = do
               _ -> do
                     let klass = testUtterance model sent
                     printClass sent $ case klass of
-                      "t" -> "tech"
-                      _ ->  "biz"
-                    loop model
+                      "t" ->  "Technology"
+                      _ ->    "Business"
+                    answer <- checkAnswer
+                    if answer then
+                        do
+                            putStrLn "Great!"
+                            loop model
+                    else 
+                        do
+                            putStrLn "OK, I stand corrected."
+                            let correct = reverseClass klass
+                            let newModel = trainUtterance model sent correct
+                            loop newModel
 
 printClass :: String -> String -> IO ()
-printClass sent c = putStrLn $ " I believe '" ++ sent ++ "' belongs to: " ++ c 
+printClass sent c = putStrLn $ " I believe '" ++ sent ++ "' belongs to: " ++ c
+
+checkAnswer :: IO Bool
+checkAnswer = do
+    putStrLn "Was this classification correct? Y(es)/N(o)"
+    putStr "> "
+    answer <- getLine
+    case answer of
+        "" -> checkAnswer
+        _ -> do
+            let c = toLower $ head answer
+            case c of
+                'y' -> return True
+                'n' -> return False
+                _ -> checkAnswer
+                        
+reverseClass :: String -> String                        
+reverseClass c = case c of
+                    "t" -> "b"
+                    _ -> "t"
