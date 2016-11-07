@@ -2,7 +2,7 @@ name:                senths
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/githubuser/senths#readme
+homepage:            https://github.com/dimidd/senths#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Author name here
@@ -25,6 +25,9 @@ executable senths-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , senths
+                     , checkers
+                     , containers
+                     , QuickCheck
   default-language:    Haskell2010
 
 test-suite senths-test
@@ -38,4 +41,4 @@ test-suite senths-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/senths
+  location: https://github.com/dimidd/senths
