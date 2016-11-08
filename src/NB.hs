@@ -72,7 +72,7 @@ trainWerd c w (Model wc cc cw) = Model wc' cc cw' <> idCat
     where
         wc' = upsertString wc w
         cw' = upsertMapString cw c w
-        idCat = idModelWithCat c 
+        idCat = idModelWithCat c
 
 -- TODO: support N-grams
 unigrams :: Utterance -> [Werd]
@@ -83,7 +83,7 @@ werds :: Utterance -> [Werd]
 werds = filter isntStopWord . unigrams . lowerChars
     where
         lowerChars = filter isAlphaSpace . map toLower
-                                                
+
 isAlphaSpace :: Char -> Bool
 isAlphaSpace = liftA2 (||) isSpace isAlpha
 
@@ -129,7 +129,7 @@ utGivenCatProbs cw ut = map (utProb ut) $ M.assocs cw
 
 -- Calculate Pr(ut|cat)
 -- We treat each word in the utterance as a feature and assume they're independent
--- i.e. seeing one word doesn't affect the probability of seeing another 
+-- i.e. seeing one word doesn't affect the probability of seeing another
 -- (this is the naive part). Thus, we multiply the probabilities of the words.
 utProb :: Utterance -> (Klass, WerdCount) -> (Klass, Double)
 utProb ut (cat, wc) = (cat, probRedux)
@@ -141,7 +141,7 @@ utProb ut (cat, wc) = (cat, probRedux)
 -- words, i.e. words that apperar in the test set but not in the training set,
 -- we add 1 to the number of appearnaces of the word in the klass.
 werdProb :: WerdCount -> Werd -> Double
-werdProb wc w = 
+werdProb wc w =
     let count = fromMaybe 0 $ M.lookup w wc
     in
         fromIntegral (count + 1) / fromIntegral (M.size wc)
