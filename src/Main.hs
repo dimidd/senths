@@ -2,7 +2,7 @@ module Main where
 import NBTrain (tsvToStats, tsvToModel)
 import NB (testUtterance, Model, idModel, trainUtterance)
 import System.IO (hSetBuffering, stdout, BufferMode (NoBuffering), isEOF)
-import Data.Char (toLower) 
+import Data.Char (toLower)
 
 endToEnd :: IO (Int, Int, Float)
 endToEnd = tsvToStats "../data/train.tsv" "../data/test.tsv"
@@ -38,7 +38,7 @@ processSentence sent model = do
                         do
                             putStrLn "Great!"
                             loop model
-                    else 
+                    else
                         do
                             putStrLn "OK, I stand corrected."
                             let correct = reverseClass klass
@@ -61,8 +61,8 @@ checkAnswer = do
                 'y' -> return True
                 'n' -> return False
                 _ -> checkAnswer
-                        
-reverseClass :: String -> String                        
+
+reverseClass :: String -> String
 reverseClass c = case c of
                     "t" -> "b"
                     _ -> "t"
