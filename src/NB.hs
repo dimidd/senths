@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module NB where
 import qualified Data.Map.Lazy as M
 import Data.List (maximumBy, foldl')
@@ -6,10 +7,20 @@ import Data.Char (isAlpha, toLower, isSpace)
 import Data.Monoid ((<>))
 import Control.Applicative (liftA2)
 import Data.Maybe (fromMaybe)
+import Test.QuickCheck
 
 import StopWord
 
-type Count = Int
+newtype Count = Count Integer
+    deriving (Show, Eq, Ord, Num, Enum, Integral, Real)
+
+genCount :: Gen Count
+genCount = do
+    NonNegative k <- arbitrary
+    return $ Count k
+
+instance Arbitrary Count where
+    arbitrary = genCount
 
 -- A different spelling to prevent collision with keywords or prelude
 type Werd = String
@@ -21,7 +32,7 @@ type KlassCount = M.Map Klass Count
 type KlassWerds = M.Map Klass WerdCount
 
 data Model = Model WerdCount KlassCount KlassWerds
-    deriving Show
+    deriving (Show, Eq)
 
 idModel :: Model
 idModel = Model M.empty M.empty M.empty
@@ -41,6 +52,16 @@ combineModels (Model wc1 cc1 cw1) (Model wc2 cc2 cw2) =
 instance Monoid Model where
     mempty = idModel
     mappend = combineModels
+
+genModel :: Gen Model
+genModel = do
+    wc <- arbitrary
+    cc <- arbitrary
+    cw <- arbitrary
+    return $ Model wc cc cw
+
+instance Arbitrary Model where
+    arbitrary = genModel
 
 trainUtterance :: Model -> Klass -> Utterance -> Model
 trainUtterance m c ut = foldr (trainWerd c) m $ werds ut
