@@ -25,7 +25,10 @@ loop model = do
             sent <- getLine
             case sent of
               "" -> putStrLn "Bye."
-              _ -> do
+              _ -> processSentence sent model
+
+processSentence :: String -> Model -> IO ()
+processSentence sent model = do
                     let klass = testUtterance model sent
                     printClass sent $ case klass of
                       "t" ->  "Technology"
