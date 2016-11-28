@@ -15,7 +15,7 @@ main = do
 
 loop :: Model -> IO ()
 loop model = do
-    putStrLn "Enter a tech/biz headline to classify. Empty string or Cntrl-C to exit"
+    putStrLn "Enter a tech/biz headline to classify. Empty string to exit"
     putStr "> "
     done <- isEOF
     if done then
