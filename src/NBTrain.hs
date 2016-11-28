@@ -33,7 +33,7 @@ tsvToModel = trainFile idModel
 testLineIO :: IO NB.Model -> String -> IO Bool
 testLineIO im l = do
     m <- im
-    return $ testLine m l  
+    return $ testLine m l
 
 testLine :: NB.Model -> String -> Bool
 testLine m l = cat == testUtterance m ut
