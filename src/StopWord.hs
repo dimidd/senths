@@ -9,7 +9,8 @@ isntStopWord s = S.notMember s stopWords
 
 stopWords :: S.Set String
 stopWords = S.fromAscList
-    ["a’s",
+    ["a",
+     "a’s",
      "able",
      "about",
      "above",
