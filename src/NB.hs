@@ -8,6 +8,7 @@ import Data.Monoid ((<>))
 import Control.Applicative (liftA2)
 import Data.Maybe (fromMaybe)
 import Test.QuickCheck
+import Test.QuickCheck.Checkers
 
 import StopWord
 
@@ -31,7 +32,7 @@ type WerdCount = M.Map Werd Count
 type KlassCount = M.Map Klass Count
 type KlassWerds = M.Map Klass WerdCount
 
-data Model = Model WerdCount KlassCount KlassWerds
+data NBModel = NBModel {wordCount :: WerdCount, classCount :: KlassCount, classWords :: KlassWerds}
     deriving (Show, Eq)
 
 idModel :: NBModel
