@@ -1,14 +1,12 @@
 module NBTrain where
-import NB (trainUtterance, testUtterance, idModel, Model)
-import Data.Monoid
-import Test.QuickCheck
+import NB (trainUtterance, testUtterance, idModel, NBModel)
 import Test.QuickCheck.Checkers
 import Test.QuickCheck.Classes
 
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
 
-trainLine :: String -> NB.Model -> NB.Model
+trainLine :: String -> NBModel -> NBModel
 trainLine l m = trainUtterance m cat ut
     where
         (cat, ut) = parseLine l
@@ -22,25 +20,25 @@ parseLine l = (cat, ut)
         cat = [head reversedLine]
         ut = reverse $ drop 2 reversedLine
 
-trainFile :: NB.Model -> FilePath -> IO NB.Model
+trainFile :: NBModel -> FilePath -> IO NBModel
 trainFile m f = do
     tsvLines <- readLines f
     return $ foldr trainLine m tsvLines
 
-tsvToModel :: FilePath -> IO NB.Model
+tsvToModel :: FilePath -> IO NBModel
 tsvToModel = trainFile idModel
 
-testLineIO :: IO NB.Model -> String -> IO Bool
+testLineIO :: IO NBModel -> String -> IO Bool
 testLineIO im l = do
     m <- im
     return $ testLine m l
 
-testLine :: NB.Model -> String -> Bool
+testLine :: NBModel -> String -> Bool
 testLine m l = cat == testUtterance m ut
    where
         (cat, ut) = parseLine l
 
-testFileIO :: IO NB.Model -> FilePath -> IO [Bool]
+testFileIO :: IO NBModel -> FilePath -> IO [Bool]
 testFileIO im f = do
     m <- im
     tsvLines <- readLines f
@@ -64,9 +62,6 @@ tsvToStats train test = do
     let im = tsvToModel train
     bools <- testFileIO im test
     return $ testStats bools
-
-instance EqProp NB.Model where
-    (=-=) = eq
 
 verifyMonoid :: IO ()
 verifyMonoid = quickBatch (monoid idModel)
