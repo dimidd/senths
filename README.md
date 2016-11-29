@@ -37,6 +37,3 @@ We trained the classifier on 928 examples of two categories, and tested on 71 ex
 [2] http://xpo6.com/list-of-english-stop-words/
 
 [3] http://archive.ics.uci.edu/ml/datasets/News+Aggregator
-
-
-
