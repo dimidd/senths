@@ -37,13 +37,15 @@ processSentence sent model = do
                     if answer then
                         do
                             putStrLn "Great!"
-                            loop model
+                            let newModel = trainUtterance model klass sent
+                            loop newModel
                     else
                         do
                             putStrLn "OK, I stand corrected."
                             let correct = reverseClass klass
-                            let newModel = trainUtterance model sent correct
+                            let newModel = trainUtterance model correct sent
                             loop newModel
+
 
 printClass :: String -> String -> IO ()
 printClass sent c = putStrLn $ " I believe '" ++ sent ++ "' belongs to: " ++ c
