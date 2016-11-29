@@ -1,6 +1,6 @@
 module Main where
 import NBTrain (tsvToStats, tsvToModel)
-import NB (testUtterance, Model, idModel, trainUtterance)
+import NB (testUtterance, NBModel, trainUtterance)
 import System.IO (hSetBuffering, stdout, BufferMode (NoBuffering), isEOF)
 import Data.Char (toLower)
 
@@ -13,7 +13,7 @@ main = do
     model <- tsvToModel "../data/train.tsv"
     loop model
 
-loop :: Model -> IO ()
+loop :: NBModel -> IO ()
 loop model = do
     putStrLn "Enter a tech/biz headline to classify. Empty string to exit"
     putStr "> "
@@ -27,7 +27,7 @@ loop model = do
               "" -> putStrLn "Bye."
               _ -> processSentence sent model
 
-processSentence :: String -> Model -> IO ()
+processSentence :: String -> NBModel -> IO ()
 processSentence sent model = do
                     let klass = testUtterance model sent
                     printClass sent $ case klass of
