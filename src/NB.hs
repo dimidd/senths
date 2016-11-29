@@ -46,9 +46,9 @@ combineNBModels :: NBModel -> NBModel -> NBModel
 combineNBModels (NBModel wc1 cc1 cw1) (NBModel wc2 cc2 cw2) =
     NBModel wc3 cc3 cw3
         where
-            wc3 = M.union wc1 wc2
-            cc3 = M.union cc1 cc2
-            cw3 = M.union cw1 cw2
+            wc3 = M.unionWith (+) wc1 wc2
+            cc3 = M.unionWith (+) cc1 cc2
+            cw3 = M.unionWith (M.unionWith (+)) cw1 cw2
 
 instance Monoid NBModel where
     mempty = idModel
